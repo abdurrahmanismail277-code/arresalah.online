@@ -26,10 +26,10 @@ const Footer = () => (
             <a href="https://www.instagram.com/arresalahinstitute" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
               <Instagram size={18} /> @arresalahinstitute
             </a>
-            <a href="https://www.facebook.com/share/1NaFXLGkZY/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
-              <Facebook size={18} /> Facebook Page
+            <a href="https://www.facebook.com/profile.php?id=61575aborresalahinstitute" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
+              <Facebook size={18} /> Arresalah Institute for Quran Memorization
             </a>
-            <a href="https://wa.me/message/YOUR_WHATSAPP_NUMBER" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
+            <a href="https://wa.me/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
               <MessageCircle size={18} /> WhatsApp
             </a>
             <span className="flex items-center gap-2">
