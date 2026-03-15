@@ -182,7 +182,8 @@ const Login = () => {
             )}
 
             <p className="text-xs text-center text-muted-foreground mt-6">
-              Don't have an account? Contact the Madrasah to enroll.
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-primary hover:underline">Create Account</Link>
             </p>
           </div>
         </div>
