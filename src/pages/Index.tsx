@@ -96,6 +96,32 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Tutors */}
+      <section className="section-padding">
+        <div className="container-max">
+          <h2 className="text-3xl sm:text-4xl text-center mb-4">Meet Our Tutors</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            Qualified male and female tutors available to guide you on your Quran journey.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-48 h-56 rounded-xl overflow-hidden mb-4 bg-muted">
+                <img src={maleTutor} alt="Male Quran Tutor" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="text-lg font-semibold">Male Tutors</h3>
+              <p className="text-sm text-muted-foreground mt-1">Available for brothers &amp; children</p>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-48 h-56 rounded-xl overflow-hidden mb-4 bg-muted">
+                <img src={femaleTutor} alt="Female Quran Tutor" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="text-lg font-semibold">Female Tutors</h3>
+              <p className="text-sm text-muted-foreground mt-1">Available for sisters &amp; children</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="section-padding bg-brown-dark text-center">
         <div className="container-max">
