@@ -38,8 +38,9 @@ const Footer = () => (
           </div>
         </div>
       </div>
-      <div className="border-t border-cream/10 mt-10 pt-6 text-center text-xs text-cream/50">
-        © {new Date().getFullYear()} Arresalah International Madrasah. All rights reserved.
+    <div className="border-t border-cream/10 mt-10 pt-6 text-center text-xs text-cream/50">
+        <p className="mb-2">CAC Reg. No: 9279310 | TIN: 2622782263635</p>
+        <p>© {new Date().getFullYear()} Arresalah International Madrasah Limited. All rights reserved.</p>
       </div>
     </div>
   </footer>
