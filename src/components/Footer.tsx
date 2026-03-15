@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Mail, Phone } from "lucide-react";
+import { Instagram, Mail, Facebook, MessageCircle } from "lucide-react";
 
 const Footer = () => (
   <footer className="bg-brown-dark text-cream/80">
@@ -25,6 +25,12 @@ const Footer = () => (
           <div className="flex flex-col gap-3 text-sm">
             <a href="https://www.instagram.com/arresalahinstitute" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
               <Instagram size={18} /> @arresalahinstitute
+            </a>
+            <a href="https://www.facebook.com/share/1NaFXLGkZY/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
+              <Facebook size={18} /> Facebook Page
+            </a>
+            <a href="https://wa.me/message/YOUR_WHATSAPP_NUMBER" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
+              <MessageCircle size={18} /> WhatsApp
             </a>
             <span className="flex items-center gap-2">
               <Mail size={18} /> info@arresalah.com
