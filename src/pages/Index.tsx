@@ -101,22 +101,24 @@ const Index = () => {
         <div className="container-max">
           <h2 className="text-3xl sm:text-4xl text-center mb-4">Meet Our Tutors</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Qualified male and female tutors available to guide you on your Quran journey.
+            Learn from qualified and experienced tutors dedicated to your Quranic journey.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
             <div className="flex flex-col items-center text-center">
               <div className="w-48 h-56 rounded-xl overflow-hidden mb-4 bg-muted">
-                <img src={maleTutor} alt="Male Quran Tutor" className="w-full h-full object-cover" />
+                <img src={maleTutor} alt="Ibn Shatibiyy - Quran Tutor" className="w-full h-full object-cover" />
               </div>
-              <h3 className="text-lg font-semibold">Male Tutors</h3>
-              <p className="text-sm text-muted-foreground mt-1">Available for brothers &amp; children</p>
+              <h3 className="text-lg font-semibold">Ibn Shatibiyy</h3>
+              <p className="text-sm text-primary font-medium mt-1">Male Tutor</p>
+              <p className="text-sm text-muted-foreground mt-1">Expert in Quran, Aqeedah &amp; Lughah</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <div className="w-48 h-56 rounded-xl overflow-hidden mb-4 bg-muted">
-                <img src={femaleTutor} alt="Female Quran Tutor" className="w-full h-full object-cover" />
+                <img src={femaleTutor} alt="Ummu Aneesah - Quran Tutor" className="w-full h-full object-cover" />
               </div>
-              <h3 className="text-lg font-semibold">Female Tutors</h3>
-              <p className="text-sm text-muted-foreground mt-1">Available for sisters &amp; children</p>
+              <h3 className="text-lg font-semibold">Ummu Aneesah</h3>
+              <p className="text-sm text-primary font-medium mt-1">Female Tutor</p>
+              <p className="text-sm text-muted-foreground mt-1">Expert in Quran</p>
             </div>
           </div>
         </div>
