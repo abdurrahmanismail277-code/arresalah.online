@@ -29,7 +29,31 @@ const About = () => (
       </div>
     </section>
 
-    {/* Mission & Vision */}
+    {/* Founder */}
+    <section className="section-padding bg-card">
+      <div className="container-max max-w-4xl">
+        <h2 className="text-3xl text-center mb-8">About the Founder</h2>
+        <div className="bg-background rounded-lg p-8 border border-border">
+          <h3 className="text-2xl font-semibold mb-1">Akinjobi Abd'Rahman Abu Huzaifah</h3>
+          <p className="text-sm text-primary font-medium mb-4">Founder &amp; Lead Instructor</p>
+          <div className="space-y-4 text-muted-foreground leading-relaxed">
+            <p>
+              A passionate teacher, writer, and speaker from Ogun State, Nigeria, originally hailing from Oyo. Abu Huzaifah takes great pride in his heritage and the values instilled in him from a young age.
+            </p>
+            <p>
+              Dedicated to spreading the wisdom of the Qur'ān, he has had the privilege of teaching many individuals the sacred words of Allah. His journey as a Qur'ān teacher has been both fulfilling and rewarding, helping numerous students memorize and understand the holy text.
+            </p>
+            <p>
+              He completed his Qur'ān memorization studies at the <strong>Ali Institute for Qur'ān Memorization, Ibadan</strong>, where he deepened his knowledge and honed his teaching skills. Despite successfully teaching many students, he remains a student of knowledge — always striving to learn and grow in both personal and professional life.
+            </p>
+            <p>
+              Also known as <strong>Abu Huzaifah</strong>, a name he holds dear, reflecting his commitment to his faith and his desire to contribute positively to the Ummah.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section className="section-padding bg-card">
       <div className="container-max">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
