@@ -55,6 +55,39 @@ const About = () => (
       </div>
     </section>
 
+    {/* CAC Accreditation */}
+    <section className="section-padding">
+      <div className="container-max max-w-4xl">
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <ShieldCheck className="text-primary" size={32} />
+          <h2 className="text-3xl text-center">Government Registered & Accredited</h2>
+        </div>
+        <div className="bg-card rounded-lg border border-border p-8">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="shrink-0">
+              <img
+                src={cacCertificate}
+                alt="CAC Certificate of Incorporation"
+                className="w-64 rounded-lg shadow-md border border-border"
+              />
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold mb-3">Certificate of Incorporation</h3>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Arresalah International Madrasah Limited is a duly registered private company under the
+                <strong> Companies and Allied Matters Act 2020</strong> of the Federal Republic of Nigeria.
+              </p>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-semibold">Company Registration No:</span> 9279310</p>
+                <p><span className="font-semibold">TIN:</span> 2622782263635</p>
+                <p><span className="font-semibold">Date of Incorporation:</span> 4th February, 2026</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     {/* Teaching Method */}
     <section className="section-padding">
       <div className="container-max max-w-4xl">
