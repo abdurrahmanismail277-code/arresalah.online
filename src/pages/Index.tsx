@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, Users, Award, Star } from "lucide-react";
 import Layout from "@/components/Layout";
 import logo from "@/assets/logo.jpg";
+import maleTutor from "@/assets/male-tutor.png";
+import femaleTutor from "@/assets/female-tutor.png";
 
 const features = [
   { icon: BookOpen, title: "Expert Tutors", desc: "Learn from certified Quran teachers with years of experience in Tajweed and Hifz." },
