@@ -10,6 +10,7 @@ import Courses from "./pages/Courses.tsx";
 import Payment from "./pages/Payment.tsx";
 import Login from "./pages/Login.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Signup from "./pages/Signup.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/courses" element={<Courses />} />
             <Route path="/payment" element={<Payment />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>

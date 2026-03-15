@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -181,7 +182,8 @@ const Login = () => {
             )}
 
             <p className="text-xs text-center text-muted-foreground mt-6">
-              Don't have an account? Contact the Madrasah to enroll.
+              Don't have an account?{" "}
+              <Link to="/signup" className="text-primary hover:underline">Create Account</Link>
             </p>
           </div>
         </div>
