@@ -114,6 +114,43 @@ const About = () => (
       </div>
     </section>
 
+    {/* Our Teachers */}
+    <section className="section-padding bg-card">
+      <div className="container-max max-w-4xl">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Users className="text-primary" size={32} />
+          <h2 className="text-3xl text-center">Our Teachers</h2>
+        </div>
+        <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto">
+          Meet our dedicated and qualified tutors guiding students on their Quranic journey.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+          <div className="bg-background rounded-lg p-8 border border-border flex flex-col items-center text-center">
+            <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-muted border-4 border-primary/20">
+              <img src={tutorMaleAvatar} alt="Ibn Shatibiyy" className="w-full h-full object-cover" />
+            </div>
+            <h3 className="text-xl font-semibold">Ibn Shatibiyy</h3>
+            <p className="text-sm text-primary font-medium mt-1 mb-3">Male Tutor</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">Quran</span>
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">Aqeedah</span>
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">Lughah</span>
+            </div>
+          </div>
+          <div className="bg-background rounded-lg p-8 border border-border flex flex-col items-center text-center">
+            <div className="w-32 h-32 rounded-full overflow-hidden mb-4 bg-muted border-4 border-primary/20">
+              <img src={tutorFemaleAvatar} alt="Ummu Aneesah" className="w-full h-full object-cover" />
+            </div>
+            <h3 className="text-xl font-semibold">Ummu Aneesah</h3>
+            <p className="text-sm text-primary font-medium mt-1 mb-3">Female Tutor</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full">Quran</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     {/* Teaching Method */}
     <section className="section-padding">
       <div className="container-max max-w-4xl">
