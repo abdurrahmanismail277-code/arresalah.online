@@ -1,6 +1,8 @@
 import Layout from "@/components/Layout";
-import { BookOpen, Target, Eye, Heart, ShieldCheck } from "lucide-react";
+import { BookOpen, Target, Eye, Heart, ShieldCheck, Users } from "lucide-react";
 import cacCertificate from "@/assets/cac-certificate.jpg";
+import tutorMaleAvatar from "@/assets/tutor-male-avatar.png";
+import tutorFemaleAvatar from "@/assets/tutor-female-avatar.png";
 
 const About = () => (
   <Layout>
