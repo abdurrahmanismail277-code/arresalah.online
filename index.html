@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arresalah Institute — Weekly Assessment</title>
+<link rel="icon" type="image/jpeg" href="./logo.jpeg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --cream:#F8F2E4;
+    --parchment:#F1E8D3;
+    --brown-deep:#3A2415;
+    --brown-warm:#5A4632;
+    --brown-soft:#8A7458;
+    --gold:#C79A2B;
+    --gold-light:#E8C874;
+    --gold-pale:#F0DCA0;
+    --green:#4C7A50;
+    --red:#B0483A;
+    --line:#DCCBA3;
+    --shadow: 0 10px 30px -12px rgba(58,36,21,0.25);
+    --radius: 14px;
+    --brown-dark:   #2C1503;
+    --brown-rich:   #4A2000;
+    --amber:        #D4881E;
+    --amber-light:  #F0B53F;
+    --wa-green:     #25D366;
+    --wa-dark:      #128C7E;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  /*  HEADER  */
+  header {
+    background: var(--brown-dark);
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 1px solid rgba(212,136,30,0.30);
+    box-shadow: 0 2px 20px rgba(26,13,0,0.4);
+  }
+  .header-inner {
+    max-width: 1120px; margin: 0 auto;
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+    position: relative;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-logo {
+    width: 42px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 10px rgba(0,0,0,0.28));
+  }
+  .brand-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .brand-arabic {
+    font-family: 'Amiri', serif;
+    color: var(--amber-light);
+    font-size: 15px; letter-spacing: 0.5px; line-height: 1;
+  }
+  .brand-en {
+    font-family: 'Cormorant Garamond', serif;
+    color: rgba(255,252,245,0.88);
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+  }
+  .brand-subtitle {
+    color: rgba(240,181,63,0.86);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.35px;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+  nav {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 24px;
+    width: min(320px, calc(100vw - 48px));
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 10px;
+    border: 1px solid rgba(212,136,30,0.24);
+    border-radius: 14px;
+    background: rgba(44,21,3,0.98);
+    box-shadow: 0 18px 42px rgba(26,13,0,0.42);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.22s, visibility 0.22s, transform 0.22s;
+  }
+  body.menu-open nav {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  nav a {
+    width: 100%;
+    color: rgba(255,248,230,0.82); text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    padding: 12px 14px; border-radius: 10px;
+    transition: color 0.2s, background 0.2s;
+  }
+  nav a:hover { color: var(--amber-light); background: rgba(212,136,30,0.10); }
+  .btn-nav-wa {
+    background: var(--wa-green) !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    padding: 12px 14px !important;
+    border-radius: 8px !important;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-top: 6px;
+  }
+  .btn-nav-wa:hover { background: #20ba59 !important; }
+  .menu-toggle {
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    z-index: 220;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(240,181,63,0.38);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.32);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    color: var(--amber-light);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .menu-toggle:hover {
+    background: rgba(212,136,30,0.14);
+    border-color: rgba(240,181,63,0.62);
+    transform: translateY(-50%);
+  }
+  .menu-toggle:focus-visible {
+    outline: 2px solid var(--amber-light);
+    outline-offset: 3px;
+  }
+  .menu-toggle-lines {
+    position: relative;
+    width: 20px;
+    height: 14px;
+    display: block;
+  }
+  .menu-toggle-lines::before,
+  .menu-toggle-lines::after,
+  .menu-toggle-lines span {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 2px;
+    border-radius: 99px;
+    background: currentColor;
+    transition: transform 0.24s, opacity 0.2s, top 0.24s;
+  }
+  .menu-toggle-lines::before { top: 0; }
+  .menu-toggle-lines span { top: 6px; }
+  .menu-toggle-lines::after { top: 12px; }
+  body.menu-open .menu-toggle-lines::before { top: 6px; transform: rotate(45deg); }
+  body.menu-open .menu-toggle-lines span { opacity: 0; }
+  body.menu-open .menu-toggle-lines::after { top: 6px; transform: rotate(-45deg); }
+
+  body{
+    background:
+      radial-gradient(circle at 15% 8%, rgba(199,154,43,0.10), transparent 40%),
+      radial-gradient(circle at 85% 92%, rgba(199,154,43,0.10), transparent 40%),
+      var(--cream);
+    color:var(--brown-deep);
+    font-family:'Jost',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+  }
+
+  .hidden{ display:none !important; }
+
+  /* ---------- Signature ornament: eight-pointed star (khatam) ---------- */
+  .star8{
+    width:34px;height:34px;
+    display:inline-block;
+    vertical-align:middle;
+  }
+  .star8 path{ fill:none; stroke:var(--gold); stroke-width:1.4; }
+
+  /* ---------- Top masthead ---------- */
+  .masthead{
+    width:100%;
+    max-width:760px;
+    background:linear-gradient(135deg, var(--brown-deep), #2C1A0F);
+    color:var(--gold-pale);
+    border-radius:var(--radius);
+    padding:26px 30px 22px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+    margin-bottom:28px;
+  }
+  .masthead::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(199,154,43,0.06) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(-45deg, rgba(199,154,43,0.06) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  .masthead-row{ display:flex; align-items:center; gap:14px; position:relative; }
+  .masthead h1{
+    font-family:'Amiri',serif;
+    font-size:1.9rem;
+    font-weight:700;
+    letter-spacing:0.3px;
+    margin:0;
+    color:var(--gold);
+  }
+  .masthead p{
+    margin:6px 0 0;
+    font-size:0.88rem;
+    color:var(--gold-pale);
+    opacity:0.85;
+    font-family:'Jost',sans-serif;
+    letter-spacing:0.2px;
+  }
+  .masthead-rule{
+    height:1px;
+    margin-top:16px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    position:relative;
+  }
+
+  .container{ width:100%; max-width:760px; }
+
+  .card{
+    background:var(--parchment);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:32px;
+    position:relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:24px; right:24px; height:3px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* ---------- Setup view ---------- */
+  #setup-view h2{
+    font-family:'Amiri',serif;
+    font-size:1.5rem;
+    margin:0 0 4px;
+    color:var(--brown-deep);
+  }
+  #setup-view .sub{
+    margin:0 0 26px;
+    color:var(--brown-soft);
+    font-size:0.92rem;
+  }
+  .field-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px 20px;
+  }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field.full{ grid-column:1 / -1; }
+  .field label{
+    font-size:0.78rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--brown-warm);
+    font-weight:500;
+  }
+  .field input, .field select{
+    font-family:'Jost',sans-serif;
+    font-size:0.98rem;
+    padding:11px 13px;
+    border-radius:9px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    color:var(--brown-deep);
+    outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus, .field select:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(199,154,43,0.18);
+  }
+
+  .btn{
+    font-family:'Jost',sans-serif;
+    font-weight:600;
+    font-size:0.95rem;
+    border:none;
+    border-radius:10px;
+    padding:13px 22px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, background .15s;
+  }
+  .btn:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{
+    background:linear-gradient(135deg, var(--gold), #B4881F);
+    color:var(--brown-deep);
+    box-shadow:0 6px 16px -6px rgba(199,154,43,0.6);
+  }
+  .btn-primary:hover{ box-shadow:0 8px 20px -6px rgba(199,154,43,0.75); }
+  .btn-secondary{
+    background:transparent;
+    color:var(--brown-warm);
+    border:1.5px solid var(--line);
+  }
+  .btn-secondary:hover{ border-color:var(--gold); color:var(--brown-deep); }
+  .btn-secondary:disabled{ opacity:0.4; cursor:not-allowed; }
+  .btn-block{ width:100%; margin-top:26px; }
+
+  /* ---------- Quiz view ---------- */
+  #quiz-view .top-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:18px; gap:16px;
+  }
+  #progress-label{
+    font-size:0.85rem; color:var(--brown-warm); font-weight:500;
+  }
+  .progress-track{
+    height:8px; border-radius:6px; background:var(--line);
+    overflow:hidden; margin-top:6px;
+  }
+  #progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--gold-light), var(--gold));
+    border-radius:6px;
+    transition:width .25s ease;
+  }
+  #timer-box{
+    display:flex; align-items:center; gap:8px;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 14px;
+    font-variant-numeric:tabular-nums;
+    font-weight:600;
+    color:var(--brown-deep);
+    white-space:nowrap;
+  }
+  #timer-box.low{
+    border-color:var(--red);
+    color:var(--red);
+    animation:pulse 1s infinite;
+  }
+  @keyframes pulse{ 50%{ opacity:0.55; } }
+
+  #question-card{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:26px 24px;
+    min-height:220px;
+  }
+  .q-eyebrow{
+    font-size:0.75rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .q-text{
+    font-size:1.12rem;
+    line-height:1.55;
+    color:var(--brown-deep);
+    margin-bottom:20px;
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+  }
+  .q-number{ color:var(--brown-soft); margin-right:6px; }
+
+  .choices{ display:flex; flex-direction:column; gap:10px; }
+  .choice{
+    display:flex; align-items:center; gap:12px;
+    border:1.5px solid var(--line);
+    background:var(--parchment);
+    border-radius:9px;
+    padding:12px 14px;
+    cursor:pointer;
+    font-size:0.96rem;
+    transition:border-color .15s, background .15s;
+    position:relative;
+  }
+  .choice input{ position:absolute; opacity:0; pointer-events:none; }
+  .choice:hover{ border-color:var(--gold-light); }
+  .choice.selected{
+    border-color:var(--gold);
+    background:linear-gradient(0deg, rgba(199,154,43,0.10), rgba(199,154,43,0.10)), var(--parchment);
+  }
+  .choice-letter{
+    width:28px; height:28px; flex:0 0 28px;
+    border-radius:50%;
+    background:var(--brown-deep);
+    color:var(--gold-pale);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.82rem; font-weight:600;
+  }
+  .choice.selected .choice-letter{ background:var(--gold); color:var(--brown-deep); }
+
+  .theory-input{
+    width:100%; min-height:150px;
+    font-family:'Jost',sans-serif;
+    font-size:0.96rem;
+    padding:14px;
+    border-radius:9px;
+    border:1.5px solid var(--line);
+    background:var(--parchment);
+    color:var(--brown-deep);
+    resize:vertical;
+    outline:none;
+  }
+  .theory-input:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(199,154,43,0.18); }
+
+  .nav-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:22px;
+  }
+
+  /* ---------- Results view ---------- */
+  #results-view .results-head{
+    display:flex; align-items:center; gap:26px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+  }
+  .gauge-wrap{ position:relative; width:176px; height:176px; flex:0 0 auto; }
+  .gauge-wrap svg{ transform:rotate(-90deg); }
+  .gauge-track{ fill:none; stroke:var(--line); stroke-width:12; }
+  #score-arc{ fill:none; stroke:var(--gold); stroke-width:12; stroke-linecap:round; transition:stroke-dashoffset .8s ease; }
+  .gauge-label{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  #score-num{ font-family:'Amiri',serif; font-size:1.8rem; font-weight:700; color:var(--brown-deep); }
+  .gauge-label span.small{ font-size:0.72rem; color:var(--brown-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+
+  .meta-block{ flex:1; min-width:180px; }
+  .meta-block h2{ font-family:'Amiri',serif; font-size:1.4rem; margin:0 0 8px; }
+  .meta-row{ display:flex; gap:10px; font-size:0.92rem; color:var(--brown-warm); margin-bottom:4px; }
+  .meta-row b{ color:var(--brown-deep); }
+
+  .hint{
+    background:rgba(176,72,58,0.10);
+    border:1px solid rgba(176,72,58,0.35);
+    color:var(--red);
+    padding:10px 16px;
+    border-radius:9px;
+    font-size:0.9rem;
+    margin-bottom:16px;
+  }
+
+  .section-title{
+    font-family:'Amiri',serif;
+    font-size:1.15rem;
+    color:var(--brown-deep);
+    margin:26px 0 12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title::after{
+    content:""; flex:1; height:1px;
+    background:linear-gradient(90deg, var(--line), transparent);
+  }
+
+  .review-item{
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .review-item .cat{
+    font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--gold); font-weight:600; margin-bottom:6px;
+  }
+  .review-item .qt{ font-size:0.96rem; color:var(--brown-deep); margin-bottom:8px; line-height:1.45; }
+  .ans-line{ font-size:0.9rem; color:var(--brown-warm); margin-bottom:4px; line-height:1.5; }
+  .tag{
+    display:inline-block;
+    font-size:0.7rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;
+    padding:2px 8px; border-radius:5px; margin-right:6px;
+  }
+  .tag.your{ background:var(--line); color:var(--brown-deep); }
+  .tag.correct{ background:rgba(76,122,80,0.15); color:var(--green); }
+  .tag.wrong{ background:rgba(176,72,58,0.15); color:var(--red); }
+
+  .results-actions{ display:flex; gap:12px; margin-top:26px; flex-wrap:wrap; }
+
+  footer.note{
+    margin-top:26px; text-align:center; font-size:0.78rem; color:var(--brown-soft);
+    max-width:760px;
+  }
+
+  @media (max-width:560px){
+    .field-grid{ grid-template-columns:1fr; }
+    .masthead h1{ font-size:1.5rem; }
+    .card{ padding:22px; }
+    #results-view .results-head{ flex-direction:column; align-items:flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Arresalah Institute home">
+      <img class="brand-logo" src="logo.jpeg" alt="" />
+      <span class="brand-text">
+        <span class="brand-en">Arresalah Institute</span>
+        <span class="brand-subtitle">Qur'an Memorization &amp; Islamic Studies</span>
+      </span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="site-nav" aria-expanded="false">
+      <span class="menu-toggle-lines" aria-hidden="true"><span></span></span>
+    </button>
+    <nav id="site-nav" aria-label="Main navigation">
+      <a href="index.html#mission">Mission</a>
+      <a href="index.html#plans">Plans</a>
+      <a href="index.html#other-courses">Other Courses</a>
+      <a href="index.html#why">Why Us</a>
+      <a href="index.html#video">Video</a>
+      <a href="index.html#faq">FAQs</a>
+      <a href="index.html#privacy">Privacy</a>
+      <a href="https://wa.me/2348082062525?text=Assalamualaikum%20Waramatullahi%20Wabarakatu%20I%20want%20make%20enquiry%20about%20the%20classes." target="_blank" rel="noopener" class="btn-nav-wa">WhatsApp Us</a>
+    </nav>
+  </div>
+</header>
+
+  <div class="masthead">
+    <div class="masthead-row">
+      <svg class="star8" viewBox="0 0 34 34"><path d="M17 1 L21 8 L29 6 L27 14 L33 17 L27 20 L29 28 L21 26 L17 33 L13 26 L5 28 L7 20 L1 17 L7 14 L5 6 L13 8 Z"/></svg>
+      <div>
+        <h1>Arresalah Institute</h1>
+        <p>Qur'ān Memorization &amp; Islamic Studies — Weekly Assessment</p>
+      </div>
+    </div>
+    <div class="masthead-rule"></div>
+  </div>
+
+  <div class="container">
+
+    <!-- ================= SETUP VIEW ================= -->
+    <section id="setup-view" class="card">
+      <h2>Start a New Assessment</h2>
+      <p class="sub">Enter the student's details to generate a fresh set of questions.</p>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="in-name">Student name</label>
+          <input type="text" id="in-name" placeholder="e.g. Amina Yusuf">
+        </div>
+        <div class="field">
+          <label for="in-age">Age</label>
+          <input type="number" id="in-age" min="4" max="99" placeholder="e.g. 10">
+        </div>
+        <div class="field">
+          <label for="in-level">Level</label>
+          <select id="in-level">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="in-week">Week / Date</label>
+          <input type="date" id="in-week">
+        </div>
+        <div class="field full">
+          <label for="in-time">Time limit</label>
+          <select id="in-time">
+            <option value="10">10 minutes</option>
+            <option value="15" selected>15 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="30">30 minutes</option>
+          </select>
+        </div>
+      </div>
+
+      <button id="btn-start" class="btn btn-primary btn-block">Begin Assessment</button>
+    </section>
+
+    <!-- ================= QUIZ VIEW ================= -->
+    <section id="quiz-view" class="card hidden">
+      <div class="top-row">
+        <div style="flex:1;">
+          <div id="progress-label">Question 1 of 20</div>
+          <div class="progress-track"><div id="progress-fill"></div></div>
+        </div>
+        <div id="timer-box"><span>⏱</span><span id="timer-text">15:00</span></div>
+      </div>
+
+      <div id="question-card"></div>
+
+      <div class="nav-row">
+        <button id="btn-prev" class="btn btn-secondary">← Back</button>
+        <button id="btn-next" class="btn btn-primary">Next →</button>
+      </div>
+    </section>
+
+    <!-- ================= RESULTS VIEW ================= -->
+    <section id="results-view" class="card hidden">
+      <div class="results-head">
+        <div class="gauge-wrap">
+          <svg width="176" height="176" viewBox="0 0 176 176">
+            <circle class="gauge-track" cx="88" cy="88" r="78"></circle>
+            <circle id="score-arc" cx="88" cy="88" r="78"></circle>
+          </svg>
+          <div class="gauge-label">
+            <span id="score-num">0/15</span>
+            <span class="small">MCQ Score</span>
+          </div>
+        </div>
+        <div class="meta-block">
+          <h2>Assessment Complete</h2>
+          <div class="meta-row"><span>Student:</span><b id="meta-name">—</b></div>
+          <div class="meta-row"><span>Level:</span><b id="meta-level">—</b></div>
+          <div class="meta-row"><span>Week:</span><b id="meta-date">—</b></div>
+        </div>
+      </div>
+
+      <div class="section-title">Multiple Choice Review</div>
+      <div id="mcq-review"></div>
+
+      <div class="section-title">Theory Answers (for teacher review)</div>
+      <div id="theory-review"></div>
+
+      <div class="results-actions">
+        <button id="btn-pdf" class="btn btn-primary">Download PDF Report</button>
+        <button id="btn-retake" class="btn btn-secondary">Start New Assessment</button>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="note">Arresalah Institute · Assessment questions are shuffled each attempt from the full question bank.</footer>
+
+<script>
+/* =======================================================
+   MENU TOGGLE FUNCTIONALITY
+   ======================================================= */
+const menuToggle = document.querySelector('.menu-toggle');
+const body = document.body;
+
+if (menuToggle) {
+  menuToggle.addEventListener('click', () => {
+    body.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', body.classList.contains('menu-open'));
+  });
+
+  // Close menu when a link is clicked
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      body.classList.remove('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const nav = document.querySelector('nav');
+    if (!menuToggle.contains(e.target) && !nav.contains(e.target)) {
+      body.classList.remove('menu-open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+/* =======================================================
+   ARRESALAH INSTITUTE — ASSESSMENT ENGINE
+   ======================================================= */
+
+/* ---------------- Question Bank ---------------- */
+const BANK = {
+beginner:{
+  mcq:[
+    {cat:"Qur'ān", q:"How many chapters (Surahs) are there in the Qur'ān?", choices:["114","100","120","99"], a:0},
+    {cat:"Qur'ān", q:"What is the first Surah of the Qur'ān called?", choices:["Al-Baqarah","Al-Ikhlās","Al-Fātihah","An-Nās"], a:2},
+    {cat:"Qur'ān", q:"In which language was the Qur'ān revealed?", choices:["Persian","Urdu","Turkish","Arabic"], a:3},
+    {cat:"Qur'ān", q:"Which angel brought the revelation to Prophet Muhammad ﷺ?", choices:["Jibrīl","Mīkā'īl","Isrāfīl","Mālik"], a:0},
+    {cat:"Seerah", q:"In which city was Prophet Muhammad ﷺ born?", choices:["Madīnah","Ṭā'if","Makkah","Jerusalem"], a:2},
+    {cat:"Seerah", q:"What was the name of the Prophet's ﷺ father?", choices:["Abū Ṭālib","Abdullāh","Abdul Muṭṭalib","Ḥamzah"], a:1},
+    {cat:"Seerah", q:"What was the name of the Prophet's ﷺ mother?", choices:["Khadījah","Fāṭimah","Āminah","Ḥalīmah"], a:2},
+    {cat:"Seerah", q:"Which city did the Prophet ﷺ migrate to from Makkah?", choices:["Ṭā'if","Damascus","Madīnah","Baghdad"], a:2},
+    {cat:"Seerah", q:"What was the Prophet's ﷺ profession before Prophethood?", choices:["Farmer","Trader","Blacksmith","Fisherman"], a:1},
+    {cat:"Sahabah", q:"Who was the first Khalīfah (caliph) after Prophet Muhammad ﷺ?", choices:["Umar ibn al-Khaṭṭāb","Abū Bakr aṣ-Ṣiddīq","Uthmān ibn Affān","Alī ibn Abī Ṭālib"], a:1},
+    {cat:"Sahabah", q:"Who was known as \"Al-Fārūq\" (the one who distinguishes truth from falsehood)?", choices:["Abū Bakr","Umar ibn al-Khaṭṭāb","Uthmān","Alī"], a:1},
+    {cat:"Sahabah", q:"Who accompanied the Prophet ﷺ during the Hijrah to Madīnah?", choices:["Umar","Abū Bakr","Bilāl","Khālid"], a:1},
+    {cat:"Sahabah", q:"Who was the first person to call the Adhān (call to prayer)?", choices:["Umar","Bilāl ibn Rabāḥ","Abū Bakr","Alī"], a:1},
+    {cat:"Tawḥīd", q:"What does \"Tawḥīd\" mean?", choices:["Prayer","Oneness of Allah","Fasting","Charity"], a:1},
+    {cat:"Tawḥīd", q:"How many pillars of Islam are there?", choices:["4","5","6","7"], a:1},
+    {cat:"Tawḥīd", q:"What is the Islamic declaration of faith called?", choices:["Ṣalāh","Shahādah","Zakāh","Ṣawm"], a:1},
+    {cat:"Tawḥīd", q:"Who is our Creator?", choices:["Angels","Prophets","Allah","Jinn"], a:2},
+    {cat:"Tajwīd", q:"What does \"Tajwīd\" mean?", choices:["Reciting the Qur'ān beautifully and correctly","Memorizing the Qur'ān","Translating the Qur'ān","Writing the Qur'ān"], a:0},
+    {cat:"Tajwīd", q:"What is the Arabic letter \"ن\" called?", choices:["Mīm","Nūn","Bā","Tā"], a:1},
+    {cat:"Tajwīd", q:"When a letter has a Sukūn (small circle mark), what does it mean?", choices:["It has a vowel sound","It has no vowel sound","Stop reading","Repeat the letter"], a:1},
+    {cat:"Nūrul Bayān", q:"How many letters are there in the Arabic alphabet?", choices:["26","28","30","29"], a:1},
+    {cat:"Nūrul Bayān", q:"Which letter comes first in the Arabic alphabet?", choices:["Bā","Alif","Tā","Jīm"], a:1},
+    {cat:"Nūrul Bayān", q:"Which letter comes last in the Arabic alphabet?", choices:["Yā","Wāw","Hā","Lām"], a:0},
+    {cat:"Islamic Studies", q:"How many times a day do Muslims pray the obligatory Ṣalāh?", choices:["3","4","5","6"], a:2},
+    {cat:"Islamic Studies", q:"In which month do Muslims fast?", choices:["Shawwāl","Ramaḍān","Muḥarram","Rajab"], a:1},
+    {cat:"Islamic Studies", q:"What is the holy book of Islam called?", choices:["Torah","Injīl","Qur'ān","Zabūr"], a:2},
+    {cat:"Duas & Manners", q:"What should a Muslim say before eating?", choices:["Alḥamdulillāh","Bismillāh","SubḥānAllāh","Astaghfirullāh"], a:1},
+    {cat:"Duas & Manners", q:"What should a Muslim say after sneezing?", choices:["Astaghfirullāh","Alḥamdulillāh","Bismillāh","Āmīn"], a:1},
+    {cat:"Duas & Manners", q:"What do we say when we hear good news?", choices:["Alḥamdulillāh","Innā lillāh","Āmīn","Wa alaikum"], a:0},
+    {cat:"Duas & Manners", q:"What do we say to greet a fellow Muslim?", choices:["Shukran","Assalāmu Alaikum","Marḥaban","Ahlan"], a:1}
+  ],
+  theory:[
+    {cat:"Islamic Studies", q:"Name the five pillars of Islam."},
+    {cat:"Seerah", q:"Who was Prophet Muhammad's ﷺ first wife? Write two things you know about her."},
+    {cat:"Duas & Manners", q:"What dua do you say before eating, and why is it important to say it?"},
+    {cat:"Tawḥīd", q:"Explain, in your own words, what Tawḥīd means."},
+    {cat:"Duas & Manners", q:"Name three good manners (akhlāq) a Muslim should have."},
+    {cat:"Seerah", q:"What happened during the Hijrah? Explain briefly."},
+    {cat:"Tajwīd", q:"Why is it important to recite the Qur'ān with correct Tajwīd?"},
+    {cat:"Qur'ān", q:"Name any three Surahs you have memorised or heard, and say what they are about."},
+    {cat:"Islamic Studies", q:"Why is the month of Ramaḍān important to Muslims?"},
+    {cat:"Duas & Manners", q:"Write two duas you say every day and when you say them."}
+  ]
+},
+intermediate:{
+  mcq:[
+    {cat:"Qur'ān", q:"Which Surah is called \"The Heart of the Qur'ān\"?", choices:["Al-Fātihah","Yāsīn","Al-Kahf","Al-Mulk"], a:1},
+    {cat:"Qur'ān", q:"How many Juz' (parts) is the Qur'ān divided into?", choices:["20","30","40","25"], a:1},
+    {cat:"Qur'ān", q:"Which Surah does not begin with \"Bismillāh\"?", choices:["At-Tawbah","Al-Ikhlāṣ","Al-Kawthar","An-Naṣr"], a:0},
+    {cat:"Qur'ān", q:"The Qur'ān was revealed over a period of approximately how many years?", choices:["13","23","10","33"], a:1},
+    {cat:"Qur'ān", q:"Which Surah is known as the \"Bride of the Qur'ān\"?", choices:["Ar-Raḥmān","Yāsīn","Al-Wāqi'ah","Al-Mulk"], a:0},
+    {cat:"Seerah", q:"Which year does the Islamic (Hijri) calendar begin from?", choices:["The year of the Hijrah","The year of the Prophet's ﷺ birth","The year of the first revelation","The year of the Conquest of Makkah"], a:0},
+    {cat:"Seerah", q:"What was the name of the cave where the Prophet ﷺ received the first revelation?", choices:["Cave of Ḥirā'","Cave of Thawr","Cave of Uḥud","Cave of Badr"], a:0},
+    {cat:"Seerah", q:"Which was the first major battle fought by the Muslims?", choices:["Battle of Uḥud","Battle of Badr","Battle of the Trench","Battle of Ḥunayn"], a:1},
+    {cat:"Seerah", q:"What is the name of the treaty signed between the Muslims and the Quraysh in the 6th year after Hijrah?", choices:["Treaty of Madīnah","Treaty of Ḥudaybiyyah","Treaty of Makkah","Constitution of Madīnah"], a:1},
+    {cat:"Seerah", q:"In which year after Hijrah did the Conquest of Makkah (Fatḥ Makkah) take place?", choices:["6 AH","8 AH","10 AH","2 AH"], a:1},
+    {cat:"Sahabah", q:"Who was known as the \"Sword of Allah\"?", choices:["Khālid ibn al-Walīd","Sa'd ibn Abī Waqqāṣ","Zubayr ibn al-Awwām","Abū Ubaydah"], a:0},
+    {cat:"Sahabah", q:"Which companion compiled the Qur'ān into one Muṣḥaf during the Caliphate of Abū Bakr?", choices:["Zayd ibn Thābit","Ubay ibn Ka'b","Ibn Mas'ūd","Uthmān ibn Affān"], a:0},
+    {cat:"Sahabah", q:"Who was the Prophet's ﷺ uncle, martyred at the Battle of Uḥud and known as the \"Lion of Allah\"?", choices:["Abū Ṭālib","Ḥamzah ibn Abdul Muṭṭalib","Al-Abbās","Aqīl"], a:1},
+    {cat:"Sahabah", q:"Which female companion was the first person to accept Islam?", choices:["Āishah","Fāṭimah","Khadījah","Umm Salamah"], a:2},
+    {cat:"Sahabah", q:"Who was appointed the third Caliph and was martyred while reading the Qur'ān?", choices:["Alī","Umar","Uthmān ibn Affān","Abū Bakr"], a:2},
+    {cat:"Tawḥīd", q:"What are the three categories of Tawḥīd commonly taught?", choices:["Rubūbiyyah, Ulūhiyyah, Asmā' wa Ṣifāt","Ṣalāh, Zakāh, Ṣawm","Īmān, Islām, Iḥsān","Qur'ān, Sunnah, Ijmā'"], a:0},
+    {cat:"Tawḥīd", q:"What is the opposite of Tawḥīd called (associating partners with Allah)?", choices:["Shirk","Kufr","Nifāq","Fisq"], a:0},
+    {cat:"Tawḥīd", q:"Which Surah is described as equal to one-third of the Qur'ān due to its focus on Tawḥīd?", choices:["Al-Ikhlāṣ","Al-Falaq","An-Nās","Al-Kawthar"], a:0},
+    {cat:"Tajwīd", q:"What is it called when Nūn Sākinah or Tanwīn is followed by a letter of Idghām, causing the sound to merge?", choices:["Iẓhār","Idghām","Iqlāb","Ikhfā'"], a:1},
+    {cat:"Tajwīd", q:"How many letters make up the \"Iẓhār\" (clear pronunciation) group for Nūn Sākinah?", choices:["2","4","6","8"], a:2},
+    {cat:"Tajwīd", q:"What does \"Qalqalah\" refer to?", choices:["Elongation of a vowel","A bouncing/echoing sound on certain letters","Merging of two letters","Stopping at the end of a verse"], a:1},
+    {cat:"Tajwīd", q:"What is \"Madd\" in Tajwīd?", choices:["Stopping","Elongation of sound","Silence","Repetition"], a:1},
+    {cat:"Nūrul Bayān", q:"What is the Arabic word for \"book\"?", choices:["Kitāb","Qalam","Bayt","Bāb"], a:0},
+    {cat:"Nūrul Bayān", q:"What is the plural of the Arabic word \"Kitāb\" (book)?", choices:["Kutub","Kitābān","Kutubān","Aktāb"], a:0},
+    {cat:"Islamic Studies", q:"Which of the following is NOT one of the six pillars of Īmān?", choices:["Belief in Angels","Belief in the Prophets","Belief in Zakāh","Belief in the Last Day"], a:2},
+    {cat:"Islamic Studies", q:"What is the term for the pilgrimage to Makkah?", choices:["Umrah","Ḥajj","Ziyārah","Safar"], a:1},
+    {cat:"Duas & Manners", q:"What should a Muslim say when entering the mosque?", choices:["A dua asking Allah to open the doors of His mercy","Alḥamdulillāh only","SubḥānAllāh only","Astaghfirullāh only"], a:0}
+  ],
+  theory:[
+    {cat:"Seerah", q:"Describe the events of the Hijrah and explain its significance to the Muslim Ummah."},
+    {cat:"Tawḥīd", q:"Explain the three categories of Tawḥīd, giving one example of each."},
+    {cat:"Seerah", q:"What lessons can Muslims learn from the Treaty of Ḥudaybiyyah?"},
+    {cat:"Tajwīd", q:"Explain the difference between Iẓhār, Idghām, Iqlāb, and Ikhfā' in Tajwīd."},
+    {cat:"Sahabah", q:"Write about the life and courage of Khālid ibn al-Walīd."},
+    {cat:"Qur'ān", q:"Why is Surah Al-Ikhlāṣ considered equal to one-third of the Qur'ān?"},
+    {cat:"Sahabah", q:"Describe how the Qur'ān was compiled into a single Muṣḥaf."},
+    {cat:"Duas & Manners", q:"Explain the importance of good manners (Akhlāq) in Islam, with two examples."},
+    {cat:"Seerah", q:"Discuss the significance of the Battle of Badr for the early Muslim community."},
+    {cat:"Tajwīd", q:"Explain what Qalqalah letters are and why they are pronounced with a bounce."}
+  ]
+},
+advanced:{
+  mcq:[
+    {cat:"Qur'ān", q:"Which verse is widely regarded as one of the last revealed, mentioning the completion of the religion?", choices:["Sūrah Al-Mā'idah, 5:3","Sūrah Al-Fātiḥah, 1:1","Sūrah Al-Baqarah, 2:1","Sūrah Al-Ikhlāṣ, 112:1"], a:0},
+    {cat:"Qur'ān", q:"What is the term for verses revealed before the Hijrah (in Makkah)?", choices:["Madanī","Makkī","Both","Neither"], a:1},
+    {cat:"Qur'ān", q:"Approximately how many verses (āyāt) does the Qur'ān contain (in the widely-used Ḥafṣ riwāyah)?", choices:["6,236","5,000","7,000","4,500"], a:0},
+    {cat:"Qur'ān", q:"What is \"Asbāb al-Nuzūl\"?", choices:["The reasons/occasions of revelation","The rules of recitation","The science of abrogation","The compilation history"], a:0},
+    {cat:"Qur'ān", q:"Which Qirā'ah (mode of recitation) is most widely used today?", choices:["Warsh","Ḥafṣ 'an Āṣim","Qālūn","Dūrī"], a:1},
+    {cat:"Seerah", q:"How many years did the Prophet ﷺ spend in Makkah after Prophethood, before the Hijrah?", choices:["10","13","23","20"], a:1},
+    {cat:"Seerah", q:"What was the name given to the year in which Abū Ṭālib and Khadījah both passed away?", choices:["'Ām al-Ḥuzn (Year of Sorrow)","'Ām al-Fīl (Year of the Elephant)","'Ām ar-Ramād","'Ām al-Wufūd"], a:0},
+    {cat:"Seerah", q:"What is the name of the night journey in which the Prophet ﷺ travelled from Makkah to Jerusalem and then ascended to the heavens?", choices:["Hijrah","Isrā' and Mi'rāj","Umrah","Ghazwah"], a:1},
+    {cat:"Seerah", q:"What is the name of the Prophet's ﷺ final sermon, delivered during his last Ḥajj?", choices:["Khuṭbatul Wadā' (The Farewell Sermon)","Khuṭbatul Fatḥ","Khuṭbatul Jumu'ah","Khuṭbatul 'Īd"], a:0},
+    {cat:"Sahabah", q:"Which companion was known as \"Ḥibrul Ummah\" (the scholar of the Ummah) for his knowledge of Tafsīr?", choices:["Ibn Abbās","Ibn Umar","Ibn Mas'ūd","Abū Hurayrah"], a:0},
+    {cat:"Sahabah", q:"Which companion is known for narrating the largest number of ḥadīth?", choices:["Abū Hurayrah","Anas ibn Mālik","Āishah","Abdullāh ibn Umar"], a:0},
+    {cat:"Sahabah", q:"Which companion was given the title \"Dhun-Nūrayn\" (possessor of the two lights) for marrying two of the Prophet's ﷺ daughters?", choices:["Uthmān ibn Affān","Alī ibn Abī Ṭālib","Zubayr ibn al-Awwām","Ṭalḥah ibn Ubaydullāh"], a:0},
+    {cat:"Tawḥīd", q:"Which scholar is well known for authoring \"Kitāb at-Tawḥīd\"?", choices:["Aḥmad ibn Ḥanbal","Muḥammad ibn Abdul Wahhāb","Imām al-Bukhārī","Imām Mālik"], a:1},
+    {cat:"Tawḥīd", q:"What term describes minor shirk that does not remove a person from Islam but remains sinful (e.g. showing off in worship)?", choices:["Shirk Akbar","Shirk Aṣghar","Kufr Akbar","Nifāq"], a:1},
+    {cat:"Tawḥīd", q:"Which category of Tawḥīd deals with directing all acts of worship to Allah alone?", choices:["Tawḥīd ar-Rubūbiyyah","Tawḥīd al-Ulūhiyyah","Tawḥīd al-Asmā' was-Ṣifāt","Tawḥīd al-Ḥākimiyyah"], a:1},
+    {cat:"Tajwīd", q:"What is the term for prolonging a Madd letter for 6 counts when a Hamzah follows it in the same word?", choices:["Madd Muttaṣil","Madd Munfaṣil","Madd Ṭabī'ī","Madd 'Āriḍ"], a:0},
+    {cat:"Tajwīd", q:"What is \"Ikhfā' Shafawī\"?", choices:["Hiding the sound of Mīm Sākinah when followed by Bā'","Hiding Nūn Sākinah when followed by certain letters","A rule specific to Qalqalah","A rule specific to Waqf"], a:0},
+    {cat:"Tajwīd", q:"The six letters of Idghām for Nūn Sākinah/Tanwīn are commonly remembered using the word:", choices:["Yarmalūn","Qalqalah","Muqaṭṭa'āt","Idhaar"], a:0},
+    {cat:"Nūrul Bayān", q:"In Arabic grammar, what is the term for the \"doer\" or subject of a verb?", choices:["Fā'il","Maf'ūl","Mubtada'","Khabar"], a:0},
+    {cat:"Nūrul Bayān", q:"What is the Arabic term for a nominal sentence (one that starts with a noun)?", choices:["Jumlah Fi'liyyah","Jumlah Ismiyyah","Jumlah Sharṭiyyah","Jumlah Ta'ajjubiyyah"], a:1},
+    {cat:"Islamic Studies", q:"What is the term for scholarly consensus, one of the sources of Islamic law?", choices:["Qiyās","Ijmā'","Istiḥsān","'Urf"], a:1},
+    {cat:"Islamic Studies", q:"What is the science of ḥadīth authentication and classification called?", choices:["Fiqh","Uṣūl al-Fiqh","Muṣṭalaḥ al-Ḥadīth","Tafsīr"], a:2},
+    {cat:"Islamic Studies", q:"Which of the four major schools (madhāhib) of Fiqh was founded by Imām Abū Ḥanīfah?", choices:["Mālikī","Ḥanafī","Shāfi'ī","Ḥanbalī"], a:1},
+    {cat:"Duas & Manners", q:"What is the special prayer performed when seeking Allah's guidance in making a decision called?", choices:["Ṣalātul Istikhārah","Ṣalātut Tasbīḥ","Ṣalātul Ḥājah","Ṣalātuḍ Ḍuḥā"], a:0},
+    {cat:"Duas & Manners", q:"What is the Islamic term most commonly used for good character and manners?", choices:["Akhlāq","Aqīdah","Fiqh","Sīrah"], a:0}
+  ],
+  theory:[
+    {cat:"Seerah", q:"Discuss the historical and legal significance of the Farewell Sermon (Khuṭbatul Wadā')."},
+    {cat:"Tawḥīd", q:"Explain the difference between Shirk Akbar and Shirk Aṣghar, providing examples of each."},
+    {cat:"Islamic Studies", q:"Discuss the roles of Ijmā' and Qiyās as sources of Islamic legislation."},
+    {cat:"Tajwīd", q:"Explain the rules of Madd Muttaṣil and Madd Munfaṣil, with examples."},
+    {cat:"Sahabah", q:"Discuss the life and scholarly contributions of Abdullāh ibn Abbās."},
+    {cat:"Sahabah", q:"Explain the process by which the Qur'ān was standardised into a single Muṣḥaf during the Caliphate of Uthmān."},
+    {cat:"Seerah", q:"Discuss the significance of the Isrā' and Mi'rāj in Islamic belief."},
+    {cat:"Tawḥīd", q:"Explain the three categories of Tawḥīd and how neglecting any one of them affects a Muslim's 'Aqīdah."},
+    {cat:"Islamic Studies", q:"Compare and contrast two of the four major schools of Fiqh."},
+    {cat:"Seerah", q:"Discuss the lessons Muslims can derive from the leadership of the Rightly Guided Caliphs (Al-Khulafā' ar-Rāshidūn)."}
+  ]
+}
+};
+
+/* ---------------- State ---------------- */
+let state = {
+  level:"beginner",
+  name:"",
+  age:"",
+  week:"",
+  timeLimitMin:15,
+  mcq:[],       // selected + shuffled mcq questions with shuffled choices
+  theory:[],    // selected theory questions
+  current:0,    // index across mcq.concat(theory)
+  answers:{},   // index -> selected choice index (mcq) or text (theory)
+  secondsLeft:0,
+  timerId:null
+};
+
+/* ---------------- Helpers ---------------- */
+function shuffleArr(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function buildAssessment(level){
+  const pool = BANK[level];
+  const mcqPicked = shuffleArr(pool.mcq).slice(0,15).map(q=>{
+    const letters = ["A","B","C","D"];
+    const order = shuffleArr(q.choices.map((text,i)=>({text, correct:i===q.a})));
+    return {cat:q.cat, q:q.q, options:order.map((o,i)=>({letter:letters[i], text:o.text, correct:o.correct})), type:"mcq"};
+  });
+  const theoryPicked = shuffleArr(pool.theory).slice(0,5).map(q=>({cat:q.cat, q:q.q, type:"theory"}));
+  return {mcq: mcqPicked, theory: theoryPicked};
+}
+
+/* ---------------- DOM refs ---------------- */
+const setupView = document.getElementById('setup-view');
+const quizView = document.getElementById('quiz-view');
+const resultsView = document.getElementById('results-view');
+const questionCard = document.getElementById('question-card');
+const progressLabel = document.getElementById('progress-label');
+const progressFill = document.getElementById('progress-fill');
+const timerText = document.getElementById('timer-text');
+const timerBox = document.getElementById('timer-box');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+
+/* ---------------- Setup / Start ---------------- */
+document.getElementById('in-week').valueAsDate = new Date();
+
+document.getElementById('btn-start').addEventListener('click', ()=>{
+  const name = document.getElementById('in-name').value.trim();
+  const age = document.getElementById('in-age').value.trim();
+  const level = document.getElementById('in-level').value;
+  const week = document.getElementById('in-week').value;
+  const timeLimitMin = parseInt(document.getElementById('in-time').value,10);
+
+  if(!name){ alert("Please enter the student's name."); return; }
+  if(!age){ alert("Please enter the student's age."); return; }
+
+  state.name = name; state.age = age; state.level = level; state.week = week;
+  state.timeLimitMin = timeLimitMin;
+  state.secondsLeft = timeLimitMin*60;
+  state.answers = {}; state.current = 0;
+
+  const built = buildAssessment(level);
+  state.mcq = built.mcq;
+  state.theory = built.theory;
+
+  setupView.classList.add('hidden');
+  resultsView.classList.add('hidden');
+  quizView.classList.remove('hidden');
+
+  renderQuestion();
+  startTimer();
+});
+
+/* ---------------- Timer ---------------- */
+function startTimer(){
+  clearInterval(state.timerId);
+  updateTimerDisplay();
+  state.timerId = setInterval(()=>{
+    state.secondsLeft--;
+    updateTimerDisplay();
+    if(state.secondsLeft<=0){
+      clearInterval(state.timerId);
+      submitAssessment(true);
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(state.secondsLeft/60);
+  const s = state.secondsLeft%60;
+  timerText.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  timerBox.classList.toggle('low', state.secondsLeft<=60);
+}
+
+/* ---------------- Rendering ---------------- */
+function allQuestions(){ return state.mcq.concat(state.theory); }
+
+function renderQuestion(){
+  const qs = allQuestions();
+  const total = qs.length;
+  const idx = state.current;
+  const q = qs[idx];
+
+  progressLabel.textContent = `Question ${idx+1} of ${total}`;
+  progressFill.style.width = `${((idx+1)/total)*100}%`;
+
+  let html = `<div class="q-eyebrow">${q.cat} &middot; ${q.type==='mcq' ? 'Multiple Choice' : 'Theory'}</div>`;
+  html += `<div class="q-text"><span class="q-number">${idx+1}.</span>${q.q}</div>`;
+
+  if(q.type==='mcq'){
+    html += `<div class="choices">`;
+    q.options.forEach((opt,i)=>{
+      const selected = state.answers[idx]===i ? 'selected':'';
+      html += `<label class="choice ${selected}" data-i="${i}">
+        <span class="choice-letter">${opt.letter}</span>
+        <span>${opt.text}</span>
+        <input type="radio" name="opt">
+      </label>`;
+    });
+    html += `</div>`;
+  } else {
+    const val = state.answers[idx] || '';
+    html += `<textarea class="theory-input" id="theory-box" placeholder="Write your answer here...">${val}</textarea>`;
+  }
+
+  questionCard.innerHTML = html;
+
+  if(q.type==='mcq'){
+    questionCard.querySelectorAll('.choice').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        state.answers[idx] = parseInt(el.getAttribute('data-i'),10);
+        renderQuestion();
+      });
+    });
+  } else {
+    const box = document.getElementById('theory-box');
+    box.addEventListener('input', ()=>{ state.answers[idx] = box.value; });
+  }
+
+  btnPrev.disabled = idx===0;
+  btnNext.textContent = (idx===total-1) ? 'Submit ✓' : 'Next →';
+}
+
+btnPrev.addEventListener('click', ()=>{
+  if(state.current>0){ state.current--; renderQuestion(); }
+});
+btnNext.addEventListener('click', ()=>{
+  const total = allQuestions().length;
+  if(state.current < total-1){ state.current++; renderQuestion(); }
+  else { submitAssessment(false); }
+});
+
+/* ---------------- Submit / Score ---------------- */
+function submitAssessment(auto){
+  clearInterval(state.timerId);
+  quizView.classList.add('hidden');
+  resultsView.classList.remove('hidden');
+
+  let correctCount = 0;
+  state.mcq.forEach((q,i)=>{
+    const chosen = state.answers[i];
+    const isCorrect = (chosen!==undefined) && q.options[chosen] && q.options[chosen].correct;
+    if(isCorrect) correctCount++;
+  });
+
+  document.getElementById('score-num').textContent = `${correctCount}/${state.mcq.length}`;
+  document.getElementById('meta-name').textContent = state.name;
+  document.getElementById('meta-level').textContent = state.level.charAt(0).toUpperCase()+state.level.slice(1);
+  document.getElementById('meta-date').textContent = state.week || '—';
+
+  const circumference = 2*Math.PI*78;
+  const pct = correctCount/state.mcq.length;
+  const arc = document.getElementById('score-arc');
+  arc.setAttribute('stroke-dasharray', circumference);
+  arc.setAttribute('stroke-dashoffset', circumference*(1-pct));
+
+  const mcqReview = document.getElementById('mcq-review');
+  mcqReview.innerHTML = state.mcq.map((q,i)=>{
+    const chosen = state.answers[i];
+    const chosenText = (chosen!==undefined && q.options[chosen]) ? q.options[chosen].text : 'No answer';
+    const correctOpt = q.options.find(o=>o.correct);
+    const gotIt = (chosen!==undefined && q.options[chosen] && q.options[chosen].correct);
+    return `<div class="review-item">
+      <div class="cat">${q.cat}</div>
+      <div class="qt">${i+1}. ${q.q}</div>
+      <div class="ans-line"><span class="tag your">Your answer</span> ${chosenText}</div>
+      ${gotIt ? `<div class="ans-line"><span class="tag correct">Correct</span></div>`
+              : `<div class="ans-line"><span class="tag wrong">Incorrect</span></div><div class="ans-line"><span class="tag correct">Correct answer</span> ${correctOpt.text}</div>`}
+    </div>`;
+  }).join('');
+
+  const theoryReview = document.getElementById('theory-review');
+  theoryReview.innerHTML = state.theory.map((q,i)=>{
+    const idx = state.mcq.length+i;
+    const ans = state.answers[idx] || '(No answer written)';
+    return `<div class="review-item">
+      <div class="cat">${q.cat}</div>
+      <div class="qt">${i+1}. ${q.q}</div>
+      <div class="ans-line" style="white-space:pre-wrap;">${ans}</div>
+    </div>`;
+  }).join('');
+
+  if(auto){
+    const banner = document.createElement('div');
+    banner.className = 'hint';
+    banner.style.textAlign = 'center';
+    banner.style.marginTop = '-10px';
+    banner.style.marginBottom = '10px';
+    banner.textContent = 'Time is up — the assessment was submitted automatically.';
+    resultsView.insertBefore(banner, resultsView.firstChild);
+  }
+}
+
+/* ---------------- Retake ---------------- */
+document.getElementById('btn-retake').addEventListener('click', ()=>{
+  resultsView.classList.add('hidden');
+  setupView.classList.remove('hidden');
+  const oldBanner = resultsView.querySelector('.hint');
+  if(oldBanner) oldBanner.remove();
+});
+
+/* ---------------- PDF Export ---------------- */
+document.getElementById('btn-pdf').addEventListener('click', ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const marginX = 48;
+  let y = 56;
+  const pageH = doc.internal.pageSize.getHeight();
+  const pageW = doc.internal.pageSize.getWidth();
+  const goldRGB = [199,154,43];
+  const brownRGB = [58,36,21];
+
+  function checkPage(space){
+    if(y+space > pageH-50){ doc.addPage(); y = 56; }
+  }
+  function wrapText(text, size, maxWidth){
+    doc.setFontSize(size);
+    return doc.splitTextToSize(text, maxWidth);
+  }
+
+  // Header
+  doc.setFillColor(...brownRGB);
+  doc.rect(0,0,pageW,80,'F');
+  doc.setTextColor(...goldRGB);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(18);
+  doc.text('Arresalah Institute', marginX, 34);
+  doc.setFontSize(10.5);
+  doc.setTextColor(240,212,138);
+  doc.setFont('helvetica','normal');
+  doc.text("Qur'an Memorization & Islamic Studies — Weekly Assessment Result", marginX, 52);
+  y = 106;
+
+  doc.setTextColor(...brownRGB);
+  doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.text(`Student: ${state.name}`, marginX, y);
+  doc.text(`Age: ${state.age}`, marginX+280, y);
+  y += 18;
+  doc.text(`Level: ${state.level.charAt(0).toUpperCase()+state.level.slice(1)}`, marginX, y);
+  doc.text(`Week: ${state.week || '-'}`, marginX+280, y);
+  y += 18;
+  const correctCount = state.mcq.filter((q,i)=>{
+    const chosen = state.answers[i];
+    return chosen!==undefined && q.options[chosen] && q.options[chosen].correct;
+  }).length;
+  doc.text(`MCQ Score: ${correctCount} / ${state.mcq.length}`, marginX, y);
+  y += 26;
+
+  doc.setDrawColor(...goldRGB); doc.setLineWidth(1.2);
+  doc.line(marginX, y, pageW-marginX, y);
+  y += 24;
+
+  // MCQ Section
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.setTextColor(...goldRGB);
+  doc.text('Multiple Choice Review', marginX, y);
+  y += 18;
+
+  state.mcq.forEach((q,i)=>{
+    checkPage(70);
+    const chosen = state.answers[i];
+    const chosenText = (chosen!==undefined && q.options[chosen]) ? q.options[chosen].text : 'No answer';
+    const correctOpt = q.options.find(o=>o.correct);
+    const gotIt = (chosen!==undefined && q.options[chosen] && q.options[chosen].correct);
+
+    doc.setTextColor(...brownRGB);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    const qLines = wrapText(`${i+1}. [${q.cat}] ${q.q}`, 10.5, pageW-2*marginX);
+    doc.text(qLines, marginX, y);
+    y += qLines.length*13 + 3;
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.8);
+    doc.setTextColor(90,70,50);
+    const yourLines = wrapText(`Your answer: ${chosenText}`, 9.8, pageW-2*marginX);
+    doc.text(yourLines, marginX+8, y);
+    y += yourLines.length*12;
+
+    if(gotIt){
+      doc.setTextColor(76,122,80);
+      doc.text('Correct', marginX+8, y);
+      y += 14;
+    } else {
+      doc.setTextColor(176,72,58);
+      doc.text('Incorrect', marginX+8, y);
+      y += 12;
+      doc.setTextColor(76,122,80);
+      const correctLines = wrapText(`Correct answer: ${correctOpt.text}`, 9.8, pageW-2*marginX);
+      doc.text(correctLines, marginX+8, y);
+      y += correctLines.length*12 + 4;
+    }
+    y += 6;
+  });
+
+  // Theory Section
+  checkPage(40);
+  y += 10;
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.setTextColor(...goldRGB);
+  doc.text('Theory Answers (for teacher review)', marginX, y);
+  y += 18;
+
+  state.theory.forEach((q,i)=>{
+    checkPage(60);
+    const idx = state.mcq.length+i;
+    const ans = state.answers[idx] || '(No answer written)';
+    doc.setTextColor(...brownRGB);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    const qLines = wrapText(`${i+1}. [${q.cat}] ${q.q}`, 10.5, pageW-2*marginX);
+    doc.text(qLines, marginX, y);
+    y += qLines.length*13 + 3;
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.8);
+    doc.setTextColor(90,70,50);
+    const ansLines = wrapText(ans, 9.8, pageW-2*marginX);
+    doc.text(ansLines, marginX+8, y);
+    y += ansLines.length*12 + 10;
+  });
+
+  const fname = `Arresalah_${state.name.replace(/\s+/g,'_')}_${state.week || 'assessment'}.pdf`;
+  doc.save(fname);
+});
+</script>
+</body>
+</html>
