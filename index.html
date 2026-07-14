@@ -386,6 +386,12 @@
     -moz-user-select:none;
     -ms-user-select:none;
   }
+  body.assessment-locked{
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+  }
   .q-number{ color:var(--brown-soft); margin-right:6px; }
 
   .choices{ display:flex; flex-direction:column; gap:10px; }
@@ -429,6 +435,18 @@
     outline:none;
   }
   .theory-input:focus{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(199,154,43,0.18); }
+  .anti-cheat-alert{
+    display:none;
+    margin-bottom:14px;
+    background:rgba(176,72,58,0.10);
+    border:1px solid rgba(176,72,58,0.35);
+    color:var(--red);
+    padding:10px 14px;
+    border-radius:9px;
+    font-size:0.88rem;
+    font-weight:600;
+  }
+  .anti-cheat-alert.show{ display:block; }
 
   .nav-row{
     display:flex; justify-content:space-between; align-items:center;
@@ -607,6 +625,7 @@
         <div id="timer-box"><span>⏱</span><span id="timer-text">15:00</span></div>
       </div>
 
+      <div id="anti-cheat-alert" class="anti-cheat-alert"></div>
       <div id="question-card"></div>
 
       <div class="nav-row">
@@ -624,8 +643,8 @@
             <circle id="score-arc" cx="88" cy="88" r="78"></circle>
           </svg>
           <div class="gauge-label">
-            <span id="score-num">0/15</span>
-            <span class="small">MCQ Score</span>
+            <span id="score-num">0%</span>
+            <span class="small">Percentage</span>
           </div>
         </div>
         <div class="meta-block">
@@ -636,10 +655,10 @@
         </div>
       </div>
 
-      <div class="section-title">Multiple Choice Review</div>
+      <div class="section-title">Auto-Graded Review</div>
       <div id="mcq-review"></div>
 
-      <div class="section-title">Theory Answers (for teacher review)</div>
+      <div class="section-title">Written Answers</div>
       <div id="theory-review"></div>
 
       <div class="results-actions">
@@ -650,7 +669,7 @@
 
   </div>
 
-  <footer class="note">Arresalah Institute · Assessment questions are shuffled each attempt from the full question bank.</footer>
+  <footer class="note">Arresalah Institute · Assessment questions are shuffled each attempt from a bank of over 5,000 questions.</footer>
 
 <script>
 /* =======================================================
@@ -821,6 +840,190 @@ advanced:{
 }
 };
 
+const QUESTION_TARGET_PER_LEVEL = 5400;
+const QUESTION_BANK_ALLOCATION = { mcq: 3200, fill: 1600, theory: 600 };
+const ASSESSMENT_COUNTS = { mcq: 20, fill: 10, theory: 5 };
+const RECENT_KEY = 'arresalah_recent_question_ids_v2';
+const MAX_WARNINGS = 3;
+
+const FACTS = {
+  beginner:[
+    ["Qur'an","the number of Surahs in the Qur'an","114",["100","120","99"]],
+    ["Qur'an","the first Surah of the Qur'an","Al-Fatihah",["Al-Baqarah","Al-Ikhlas","An-Nas"]],
+    ["Qur'an","the language of the Qur'an","Arabic",["Persian","Turkish","Urdu"]],
+    ["Qur'an","the angel who brought revelation","Jibril",["Mika'il","Israfil","Malik"]],
+    ["Seerah","the city where Prophet Muhammad was born","Makkah",["Madinah","Ta'if","Jerusalem"]],
+    ["Seerah","the Prophet's father's name","Abdullah",["Abu Talib","Abdul Muttalib","Hamzah"]],
+    ["Seerah","the Prophet's mother's name","Aminah",["Khadijah","Fatimah","Halimah"]],
+    ["Seerah","the city of Hijrah","Madinah",["Ta'if","Damascus","Baghdad"]],
+    ["Sahabah","the first Khalifah after the Prophet","Abu Bakr",["Umar","Uthman","Ali"]],
+    ["Sahabah","the first caller of the Adhan","Bilal ibn Rabah",["Umar","Abu Bakr","Ali"]],
+    ["Tawhid","the meaning of Tawhid","Oneness of Allah",["Prayer","Fasting","Charity"]],
+    ["Islamic Studies","the number of pillars of Islam","5",["4","6","7"]],
+    ["Islamic Studies","the month of obligatory fasting","Ramadan",["Shawwal","Muharram","Rajab"]],
+    ["Duas & Manners","what Muslims say before eating","Bismillah",["Alhamdulillah","SubhanAllah","Astaghfirullah"]],
+    ["Duas & Manners","the greeting of Muslims","Assalamu Alaikum",["Shukran","Marhaban","Ahlan"]]
+  ],
+  intermediate:[
+    ["Qur'an","the Surah called the Heart of the Qur'an","Yasin",["Al-Fatihah","Al-Kahf","Al-Mulk"]],
+    ["Qur'an","the number of Juz in the Qur'an","30",["20","25","40"]],
+    ["Qur'an","the Surah that does not begin with Bismillah","At-Tawbah",["Al-Ikhlas","Al-Kawthar","An-Nasr"]],
+    ["Qur'an","the approximate period of revelation","23 years",["13 years","10 years","33 years"]],
+    ["Seerah","the cave of the first revelation","Hira",["Thawr","Uhud","Badr"]],
+    ["Seerah","the first major battle of the Muslims","Badr",["Uhud","Trench","Hunayn"]],
+    ["Seerah","the treaty in the 6th year after Hijrah","Hudaybiyyah",["Treaty of Madinah","Treaty of Makkah","Constitution of Madinah"]],
+    ["Sahabah","the companion known as Sword of Allah","Khalid ibn al-Walid",["Sa'd ibn Abi Waqqas","Zubayr","Abu Ubaydah"]],
+    ["Sahabah","the scribe who compiled the Qur'an under Abu Bakr","Zayd ibn Thabit",["Ubay ibn Ka'b","Ibn Mas'ud","Uthman"]],
+    ["Tawhid","the opposite of Tawhid","Shirk",["Kufr","Nifaq","Fisq"]],
+    ["Tawhid","the Surah equal to one-third of the Qur'an","Al-Ikhlas",["Al-Falaq","An-Nas","Al-Kawthar"]],
+    ["Tajwid","merging Noon Sakinah or Tanwin into the next letter","Idgham",["Izhar","Iqlab","Ikhfa"]],
+    ["Tajwid","the number of Izhar letters","6",["2","4","8"]],
+    ["Islamic Studies","the pilgrimage to Makkah","Hajj",["Umrah","Ziyarah","Safar"]],
+    ["Duas & Manners","good character and manners in Islam","Akhlaq",["Aqidah","Fiqh","Seerah"]]
+  ],
+  advanced:[
+    ["Qur'an","the verse mentioning completion of the religion","Al-Ma'idah 5:3",["Al-Fatihah 1:1","Al-Baqarah 2:1","Al-Ikhlas 112:1"]],
+    ["Qur'an","verses revealed before Hijrah","Makki",["Madani","Both","Neither"]],
+    ["Qur'an","the widely used count of Qur'anic verses in Hafs","6236",["5000","7000","4500"]],
+    ["Qur'an","the reasons or occasions of revelation","Asbab al-Nuzul",["Tajwid","Naskh","Compilation history"]],
+    ["Qur'an","the most widely used recitation today","Hafs an Asim",["Warsh","Qalun","Duri"]],
+    ["Seerah","years spent in Makkah after Prophethood before Hijrah","13",["10","20","23"]],
+    ["Seerah","the Year of Sorrow","Am al-Huzn",["Am al-Fil","Am ar-Ramad","Am al-Wufud"]],
+    ["Seerah","the night journey and ascension","Isra and Miraj",["Hijrah","Umrah","Ghazwah"]],
+    ["Sahabah","the scholar of the Ummah in Tafsir","Ibn Abbas",["Ibn Umar","Ibn Mas'ud","Abu Hurayrah"]],
+    ["Sahabah","the narrator of the largest number of hadith","Abu Hurayrah",["Anas ibn Malik","Aishah","Ibn Umar"]],
+    ["Tawhid","minor shirk that does not remove a person from Islam","Shirk Asghar",["Shirk Akbar","Kufr Akbar","Nifaq"]],
+    ["Tawhid","directing worship to Allah alone","Tawhid al-Uluhiyyah",["Tawhid ar-Rububiyyah","Tawhid al-Asma wa Sifat","Tawhid al-Hakimiyyah"]],
+    ["Tajwid","Madd with hamzah in the same word","Madd Muttasil",["Madd Munfasil","Madd Tabi'i","Madd Arid"]],
+    ["Tajwid","hiding Meem Sakinah before Ba","Ikhfa Shafawi",["Izhar Shafawi","Idgham","Qalqalah"]],
+    ["Islamic Studies","scholarly consensus in Islamic law","Ijma",["Qiyas","Istihsan","Urf"]],
+    ["Islamic Studies","hadith authentication and classification","Mustalah al-Hadith",["Fiqh","Usul al-Fiqh","Tafsir"]],
+    ["Islamic Studies","the madhhab founded by Imam Abu Hanifah","Hanafi",["Maliki","Shafi'i","Hanbali"]],
+    ["Duas & Manners","the prayer for guidance in decisions","Salatul Istikharah",["Salatut Tasbih","Salatul Hajah","Salatud Duha"]]
+  ]
+};
+
+const THEORY_KEYS = {
+  beginner:[
+    {cat:"Islamic Studies", q:"Name the five pillars of Islam.", answer:"Shahadah, Salah, Zakah, Sawm, and Hajj.", keywords:["shahadah","salah","zakah","sawm","hajj"]},
+    {cat:"Tawhid", q:"Explain what Tawhid means.", answer:"Tawhid means believing in and worshipping Allah alone without partners.", keywords:["allah","alone","worship","partners"]},
+    {cat:"Duas & Manners", q:"Write three good manners a Muslim should have.", answer:"A Muslim should be truthful, respectful, and kind.", keywords:["truthful","respectful","kind"]},
+    {cat:"Seerah", q:"What happened during the Hijrah?", answer:"The Prophet migrated from Makkah to Madinah with Abu Bakr.", keywords:["makkah","madinah","abu bakr","migrated"]},
+    {cat:"Tajwid", q:"Why is Tajwid important?", answer:"Tajwid helps a Muslim recite the Qur'an correctly and beautifully.", keywords:["recite","qur'an","correctly"]}
+  ],
+  intermediate:[
+    {cat:"Tawhid", q:"Explain the three categories of Tawhid.", answer:"They are Rububiyyah, Uluhiyyah, and Asma wa Sifat.", keywords:["rububiyyah","uluhiyyah","asma","sifat"]},
+    {cat:"Tajwid", q:"Explain Izhar, Idgham, Iqlab, and Ikhfa.", answer:"Izhar is clear, Idgham merges, Iqlab changes to meem, and Ikhfa hides the sound.", keywords:["izhar","idgham","iqlab","ikhfa"]},
+    {cat:"Seerah", q:"Give two lessons from the Treaty of Hudaybiyyah.", answer:"Hudaybiyyah teaches patience, wisdom, keeping treaties, and trusting Allah.", keywords:["patience","wisdom","treaty","allah"]},
+    {cat:"Sahabah", q:"How was the Qur'an compiled into one Mushaf?", answer:"Zayd ibn Thabit gathered written verses and memorized recitations under Abu Bakr.", keywords:["zayd","abu bakr","written","memorized"]},
+    {cat:"Duas & Manners", q:"Explain why Akhlaq is important in Islam.", answer:"Good akhlaq pleases Allah, follows the Prophet, and improves relationships.", keywords:["allah","prophet","relationships"]}
+  ],
+  advanced:[
+    {cat:"Tawhid", q:"Explain the difference between Shirk Akbar and Shirk Asghar.", answer:"Shirk Akbar removes a person from Islam, while Shirk Asghar is a major sin such as showing off.", keywords:["akbar","removes","islam","asghar","showing off"]},
+    {cat:"Islamic Studies", q:"Discuss the roles of Ijma and Qiyas.", answer:"Ijma is scholarly consensus, while Qiyas is analogical reasoning based on Qur'an and Sunnah.", keywords:["ijma","consensus","qiyas","analogical","qur'an","sunnah"]},
+    {cat:"Tajwid", q:"Explain Madd Muttasil and Madd Munfasil.", answer:"Madd Muttasil has hamzah in the same word; Madd Munfasil has hamzah in the next word.", keywords:["muttasil","hamzah","same word","munfasil","next word"]},
+    {cat:"Sahabah", q:"Discuss the contribution of Abdullah ibn Abbas.", answer:"Ibn Abbas was known for knowledge of Tafsir, Qur'an meanings, and teaching the Ummah.", keywords:["ibn abbas","tafsir","qur'an","teaching"]},
+    {cat:"Seerah", q:"State two lessons from the Farewell Sermon.", answer:"The Farewell Sermon emphasized justice, sanctity of life, rights, equality, and holding to Qur'an and Sunnah.", keywords:["justice","life","rights","equality","qur'an","sunnah"]}
+  ]
+};
+
+function normalizeText(text){
+  return String(text || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^\w\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function escapeHtml(value){
+  return String(value || '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function makeId(level,type,n){ return `${level}-${type}-${n}`; }
+
+function makeQuestionBank(level){
+  const generated = {mcq:[], fill:[], theory:[]};
+  const facts = FACTS[level];
+  const stems = [
+    item => `What is ${item[1]}?`,
+    item => `Choose the correct answer for ${item[1]}.`,
+    item => `Identify ${item[1]}.`,
+    item => `Which option correctly gives ${item[1]}?`,
+    item => `In Islamic studies, what is ${item[1]}?`
+  ];
+
+  let n = 0;
+  while(generated.mcq.length < QUESTION_BANK_ALLOCATION.mcq){
+    const item = facts[n % facts.length];
+    const stem = stems[n % stems.length](item);
+    const choices = [item[2], ...item[3]];
+    generated.mcq.push({id:makeId(level,'mcq',n), cat:item[0], q:stem, choices, a:0});
+    n++;
+  }
+
+  n = 0;
+  while(generated.fill.length < QUESTION_BANK_ALLOCATION.fill){
+    const item = facts[n % facts.length];
+    generated.fill.push({
+      id:makeId(level,'fill',n),
+      cat:item[0],
+      q:`Fill in the gap: ${item[1][0].toUpperCase()+item[1].slice(1)} is ________.`,
+      answer:item[2],
+      accepted:[item[2]]
+    });
+    n++;
+  }
+
+  n = 0;
+  const keys = THEORY_KEYS[level];
+  while(generated.theory.length < QUESTION_BANK_ALLOCATION.theory){
+    const key = keys[n % keys.length];
+    generated.theory.push({
+      id:makeId(level,'theory',n),
+      cat:key.cat,
+      q:key.q,
+      answer:key.answer,
+      keywords:key.keywords
+    });
+    n++;
+  }
+
+  return generated;
+}
+
+const GENERATED_BANKS = {
+  beginner: makeQuestionBank('beginner'),
+  intermediate: makeQuestionBank('intermediate'),
+  advanced: makeQuestionBank('advanced')
+};
+
+function getFullPool(level){
+  return {
+    mcq:[...BANK[level].mcq.map((q,i)=>({...q,id:`${level}-seed-mcq-${i}`})), ...GENERATED_BANKS[level].mcq],
+    fill:GENERATED_BANKS[level].fill,
+    theory:[...THEORY_KEYS[level].map((q,i)=>({...q,id:`${level}-seed-theory-${i}`})), ...GENERATED_BANKS[level].theory]
+  };
+}
+
+function getRecentIds(){
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+
+function rememberQuestionIds(ids){
+  const recent = [...ids, ...getRecentIds()].filter(Boolean);
+  localStorage.setItem(RECENT_KEY, JSON.stringify([...new Set(recent)].slice(0,450)));
+}
+
+function pickFresh(pool, count, recentSet){
+  const fresh = shuffleArr(pool).filter(q=>!recentSet.has(q.id));
+  const fallback = shuffleArr(pool).filter(q=>recentSet.has(q.id));
+  return fresh.concat(fallback).slice(0,count);
+}
+
 /* ---------------- State ---------------- */
 let state = {
   level:"beginner",
@@ -829,11 +1032,14 @@ let state = {
   week:"",
   timeLimitMin:15,
   mcq:[],       // selected + shuffled mcq questions with shuffled choices
-  theory:[],    // selected theory questions
-  current:0,    // index across mcq.concat(theory)
-  answers:{},   // index -> selected choice index (mcq) or text (theory)
+  fill:[],      // selected fill-in-the-gap questions
+  theory:[],    // selected theory questions with answer keys
+  current:0,    // index across mcq, fill, and theory questions
+  answers:{},   // index -> selected choice index (mcq) or text (written answers)
   secondsLeft:0,
-  timerId:null
+  timerId:null,
+  warnings:0,
+  submitted:false
 };
 
 /* ---------------- Helpers ---------------- */
@@ -847,14 +1053,21 @@ function shuffleArr(arr){
 }
 
 function buildAssessment(level){
-  const pool = BANK[level];
-  const mcqPicked = shuffleArr(pool.mcq).slice(0,15).map(q=>{
+  const pool = getFullPool(level);
+  const recentSet = new Set(getRecentIds());
+  const mcqPicked = pickFresh(pool.mcq, ASSESSMENT_COUNTS.mcq, recentSet).map(q=>{
     const letters = ["A","B","C","D"];
     const order = shuffleArr(q.choices.map((text,i)=>({text, correct:i===q.a})));
-    return {cat:q.cat, q:q.q, options:order.map((o,i)=>({letter:letters[i], text:o.text, correct:o.correct})), type:"mcq"};
+    return {id:q.id, cat:q.cat, q:q.q, options:order.map((o,i)=>({letter:letters[i], text:o.text, correct:o.correct})), type:"mcq"};
   });
-  const theoryPicked = shuffleArr(pool.theory).slice(0,5).map(q=>({cat:q.cat, q:q.q, type:"theory"}));
-  return {mcq: mcqPicked, theory: theoryPicked};
+  const fillPicked = pickFresh(pool.fill, ASSESSMENT_COUNTS.fill, recentSet).map(q=>({
+    id:q.id, cat:q.cat, q:q.q, type:"fill", answer:q.answer, accepted:q.accepted || [q.answer]
+  }));
+  const theoryPicked = pickFresh(pool.theory, ASSESSMENT_COUNTS.theory, recentSet).map(q=>({
+    id:q.id, cat:q.cat, q:q.q, type:"theory", answer:q.answer, keywords:q.keywords || []
+  }));
+  rememberQuestionIds([...mcqPicked, ...fillPicked, ...theoryPicked].map(q=>q.id));
+  return {mcq: mcqPicked, fill: fillPicked, theory: theoryPicked};
 }
 
 /* ---------------- DOM refs ---------------- */
@@ -862,6 +1075,7 @@ const setupView = document.getElementById('setup-view');
 const quizView = document.getElementById('quiz-view');
 const resultsView = document.getElementById('results-view');
 const questionCard = document.getElementById('question-card');
+const antiCheatAlert = document.getElementById('anti-cheat-alert');
 const progressLabel = document.getElementById('progress-label');
 const progressFill = document.getElementById('progress-fill');
 const timerText = document.getElementById('timer-text');
@@ -885,10 +1099,11 @@ document.getElementById('btn-start').addEventListener('click', ()=>{
   state.name = name; state.age = age; state.level = level; state.week = week;
   state.timeLimitMin = timeLimitMin;
   state.secondsLeft = timeLimitMin*60;
-  state.answers = {}; state.current = 0;
+  state.answers = {}; state.current = 0; state.warnings = 0; state.submitted = false;
 
   const built = buildAssessment(level);
   state.mcq = built.mcq;
+  state.fill = built.fill;
   state.theory = built.theory;
 
   setupView.classList.add('hidden');
@@ -896,7 +1111,58 @@ document.getElementById('btn-start').addEventListener('click', ()=>{
   quizView.classList.remove('hidden');
 
   renderQuestion();
+  enableAntiCheat();
   startTimer();
+});
+
+function enableAntiCheat(){
+  document.body.classList.add('assessment-locked');
+  showAntiCheatMessage('');
+}
+
+function disableAntiCheat(){
+  document.body.classList.remove('assessment-locked');
+  showAntiCheatMessage('');
+}
+
+function showAntiCheatMessage(message){
+  if(!antiCheatAlert) return;
+  antiCheatAlert.textContent = message;
+  antiCheatAlert.classList.toggle('show', Boolean(message));
+}
+
+function recordCheatWarning(reason){
+  if(quizView.classList.contains('hidden') || state.submitted) return;
+  state.warnings++;
+  if(state.warnings >= MAX_WARNINGS){
+    submitAssessment(true, `Assessment submitted after ${MAX_WARNINGS} anti-cheat warnings.`);
+    return;
+  }
+  showAntiCheatMessage(`${reason} Warning ${state.warnings}/${MAX_WARNINGS}. The assessment will submit automatically after repeated violations.`);
+}
+
+['copy','cut','paste','contextmenu','dragstart','drop'].forEach(evt=>{
+  document.addEventListener(evt, e=>{
+    if(!quizView.classList.contains('hidden')){
+      e.preventDefault();
+      recordCheatWarning('Copy, paste, right-click, and drag actions are not allowed.');
+    }
+  });
+});
+
+document.addEventListener('keydown', e=>{
+  if(quizView.classList.contains('hidden')) return;
+  const key = e.key.toLowerCase();
+  const blocked = (e.ctrlKey || e.metaKey) && ['c','x','v','a','s','p','u','f'].includes(key);
+  if(blocked || key === 'printscreen'){
+    e.preventDefault();
+    recordCheatWarning('Restricted keyboard shortcut detected.');
+  }
+});
+
+window.addEventListener('blur', ()=>recordCheatWarning('Leaving the assessment window is not allowed.'));
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) recordCheatWarning('Switching tabs is not allowed.');
 });
 
 /* ---------------- Timer ---------------- */
@@ -920,7 +1186,7 @@ function updateTimerDisplay(){
 }
 
 /* ---------------- Rendering ---------------- */
-function allQuestions(){ return state.mcq.concat(state.theory); }
+function allQuestions(){ return state.mcq.concat(state.fill, state.theory); }
 
 function renderQuestion(){
   const qs = allQuestions();
@@ -931,8 +1197,9 @@ function renderQuestion(){
   progressLabel.textContent = `Question ${idx+1} of ${total}`;
   progressFill.style.width = `${((idx+1)/total)*100}%`;
 
-  let html = `<div class="q-eyebrow">${q.cat} &middot; ${q.type==='mcq' ? 'Multiple Choice' : 'Theory'}</div>`;
-  html += `<div class="q-text"><span class="q-number">${idx+1}.</span>${q.q}</div>`;
+  const typeLabel = q.type==='mcq' ? 'Multiple Choice' : (q.type==='fill' ? 'Fill in the Gap' : 'Theory');
+  let html = `<div class="q-eyebrow">${escapeHtml(q.cat)} &middot; ${typeLabel}</div>`;
+  html += `<div class="q-text"><span class="q-number">${idx+1}.</span>${escapeHtml(q.q)}</div>`;
 
   if(q.type==='mcq'){
     html += `<div class="choices">`;
@@ -940,14 +1207,15 @@ function renderQuestion(){
       const selected = state.answers[idx]===i ? 'selected':'';
       html += `<label class="choice ${selected}" data-i="${i}">
         <span class="choice-letter">${opt.letter}</span>
-        <span>${opt.text}</span>
+        <span>${escapeHtml(opt.text)}</span>
         <input type="radio" name="opt">
       </label>`;
     });
     html += `</div>`;
   } else {
     const val = state.answers[idx] || '';
-    html += `<textarea class="theory-input" id="theory-box" placeholder="Write your answer here...">${val}</textarea>`;
+    const placeholder = q.type === 'fill' ? 'Type the exact missing answer...' : 'Write your answer here...';
+    html += `<textarea class="theory-input" id="theory-box" placeholder="${placeholder}">${escapeHtml(val)}</textarea>`;
   }
 
   questionCard.innerHTML = html;
@@ -977,26 +1245,55 @@ btnNext.addEventListener('click', ()=>{
   else { submitAssessment(false); }
 });
 
+function gradeTextAnswer(question, answer){
+  const normalized = normalizeText(answer);
+  if(!normalized) return false;
+
+  if(question.type === 'fill'){
+    return (question.accepted || [question.answer]).some(item => normalizeText(item) === normalized);
+  }
+
+  const answerText = normalizeText(question.answer);
+  if(normalized === answerText) return true;
+
+  const keywords = question.keywords || [];
+  return keywords.length > 0 && keywords.every(word => normalized.includes(normalizeText(word)));
+}
+
+function gradeQuestion(q, idx){
+  if(q.type === 'mcq'){
+    const chosen = state.answers[idx];
+    return Boolean(chosen!==undefined && q.options[chosen] && q.options[chosen].correct);
+  }
+  return gradeTextAnswer(q, state.answers[idx]);
+}
+
+function scoreAssessment(){
+  const questions = allQuestions();
+  const correct = questions.filter((q,i)=>gradeQuestion(q,i)).length;
+  const total = questions.length;
+  const percent = total ? Math.round((correct / total) * 100) : 0;
+  return {correct, total, percent};
+}
+
 /* ---------------- Submit / Score ---------------- */
-function submitAssessment(auto){
+function submitAssessment(auto, autoMessage){
+  if(state.submitted) return;
+  state.submitted = true;
   clearInterval(state.timerId);
+  disableAntiCheat();
   quizView.classList.add('hidden');
   resultsView.classList.remove('hidden');
 
-  let correctCount = 0;
-  state.mcq.forEach((q,i)=>{
-    const chosen = state.answers[i];
-    const isCorrect = (chosen!==undefined) && q.options[chosen] && q.options[chosen].correct;
-    if(isCorrect) correctCount++;
-  });
+  const score = scoreAssessment();
 
-  document.getElementById('score-num').textContent = `${correctCount}/${state.mcq.length}`;
+  document.getElementById('score-num').textContent = `${score.percent}%`;
   document.getElementById('meta-name').textContent = state.name;
   document.getElementById('meta-level').textContent = state.level.charAt(0).toUpperCase()+state.level.slice(1);
   document.getElementById('meta-date').textContent = state.week || '—';
 
   const circumference = 2*Math.PI*78;
-  const pct = correctCount/state.mcq.length;
+  const pct = score.correct/score.total;
   const arc = document.getElementById('score-arc');
   arc.setAttribute('stroke-dasharray', circumference);
   arc.setAttribute('stroke-dashoffset', circumference*(1-pct));
@@ -1006,24 +1303,39 @@ function submitAssessment(auto){
     const chosen = state.answers[i];
     const chosenText = (chosen!==undefined && q.options[chosen]) ? q.options[chosen].text : 'No answer';
     const correctOpt = q.options.find(o=>o.correct);
-    const gotIt = (chosen!==undefined && q.options[chosen] && q.options[chosen].correct);
+    const gotIt = gradeQuestion(q,i);
     return `<div class="review-item">
-      <div class="cat">${q.cat}</div>
-      <div class="qt">${i+1}. ${q.q}</div>
-      <div class="ans-line"><span class="tag your">Your answer</span> ${chosenText}</div>
+      <div class="cat">${escapeHtml(q.cat)}</div>
+      <div class="qt">${i+1}. ${escapeHtml(q.q)}</div>
+      <div class="ans-line"><span class="tag your">Your answer</span> ${escapeHtml(chosenText)}</div>
       ${gotIt ? `<div class="ans-line"><span class="tag correct">Correct</span></div>`
-              : `<div class="ans-line"><span class="tag wrong">Incorrect</span></div><div class="ans-line"><span class="tag correct">Correct answer</span> ${correctOpt.text}</div>`}
+              : `<div class="ans-line"><span class="tag wrong">Incorrect</span></div><div class="ans-line"><span class="tag correct">Correct answer</span> ${escapeHtml(correctOpt.text)}</div>`}
+    </div>`;
+  }).join('') + state.fill.map((q,i)=>{
+    const idx = state.mcq.length+i;
+    const ans = state.answers[idx] || 'No answer';
+    const gotIt = gradeQuestion(q,idx);
+    return `<div class="review-item">
+      <div class="cat">${escapeHtml(q.cat)}</div>
+      <div class="qt">${state.mcq.length+i+1}. ${escapeHtml(q.q)}</div>
+      <div class="ans-line"><span class="tag your">Your answer</span> ${escapeHtml(ans)}</div>
+      ${gotIt ? `<div class="ans-line"><span class="tag correct">Correct</span></div>`
+              : `<div class="ans-line"><span class="tag wrong">Incorrect</span></div><div class="ans-line"><span class="tag correct">Correct answer</span> ${escapeHtml(q.answer)}</div>`}
     </div>`;
   }).join('');
 
   const theoryReview = document.getElementById('theory-review');
   theoryReview.innerHTML = state.theory.map((q,i)=>{
-    const idx = state.mcq.length+i;
+    const idx = state.mcq.length+state.fill.length+i;
     const ans = state.answers[idx] || '(No answer written)';
+    const gotIt = gradeQuestion(q,idx);
     return `<div class="review-item">
-      <div class="cat">${q.cat}</div>
-      <div class="qt">${i+1}. ${q.q}</div>
-      <div class="ans-line" style="white-space:pre-wrap;">${ans}</div>
+      <div class="cat">${escapeHtml(q.cat)}</div>
+      <div class="qt">${i+1}. ${escapeHtml(q.q)}</div>
+      <div class="ans-line"><span class="tag your">Your answer</span></div>
+      <div class="ans-line" style="white-space:pre-wrap;">${escapeHtml(ans)}</div>
+      ${gotIt ? `<div class="ans-line"><span class="tag correct">Correct</span></div>`
+              : `<div class="ans-line"><span class="tag wrong">Incorrect</span></div><div class="ans-line"><span class="tag correct">Expected answer</span> ${escapeHtml(q.answer)}</div>`}
     </div>`;
   }).join('');
 
@@ -1033,7 +1345,7 @@ function submitAssessment(auto){
     banner.style.textAlign = 'center';
     banner.style.marginTop = '-10px';
     banner.style.marginBottom = '10px';
-    banner.textContent = 'Time is up — the assessment was submitted automatically.';
+    banner.textContent = autoMessage || 'Time is up — the assessment was submitted automatically.';
     resultsView.insertBefore(banner, resultsView.firstChild);
   }
 }
@@ -1086,11 +1398,8 @@ document.getElementById('btn-pdf').addEventListener('click', ()=>{
   doc.text(`Level: ${state.level.charAt(0).toUpperCase()+state.level.slice(1)}`, marginX, y);
   doc.text(`Week: ${state.week || '-'}`, marginX+280, y);
   y += 18;
-  const correctCount = state.mcq.filter((q,i)=>{
-    const chosen = state.answers[i];
-    return chosen!==undefined && q.options[chosen] && q.options[chosen].correct;
-  }).length;
-  doc.text(`MCQ Score: ${correctCount} / ${state.mcq.length}`, marginX, y);
+  const score = scoreAssessment();
+  doc.text(`Percentage Score: ${score.percent}% (${score.correct} / ${score.total})`, marginX, y);
   y += 26;
 
   doc.setDrawColor(...goldRGB); doc.setLineWidth(1.2);
@@ -1100,7 +1409,7 @@ document.getElementById('btn-pdf').addEventListener('click', ()=>{
   // MCQ Section
   doc.setFont('helvetica','bold'); doc.setFontSize(13);
   doc.setTextColor(...goldRGB);
-  doc.text('Multiple Choice Review', marginX, y);
+  doc.text('Auto-Graded Review', marginX, y);
   y += 18;
 
   state.mcq.forEach((q,i)=>{
@@ -1108,7 +1417,7 @@ document.getElementById('btn-pdf').addEventListener('click', ()=>{
     const chosen = state.answers[i];
     const chosenText = (chosen!==undefined && q.options[chosen]) ? q.options[chosen].text : 'No answer';
     const correctOpt = q.options.find(o=>o.correct);
-    const gotIt = (chosen!==undefined && q.options[chosen] && q.options[chosen].correct);
+    const gotIt = gradeQuestion(q,i);
 
     doc.setTextColor(...brownRGB);
     doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
@@ -1138,18 +1447,53 @@ document.getElementById('btn-pdf').addEventListener('click', ()=>{
     y += 6;
   });
 
+  state.fill.forEach((q,i)=>{
+    const idx = state.mcq.length+i;
+    checkPage(70);
+    const ans = state.answers[idx] || 'No answer';
+    const gotIt = gradeQuestion(q,idx);
+
+    doc.setTextColor(...brownRGB);
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    const qLines = wrapText(`${idx+1}. [${q.cat}] ${q.q}`, 10.5, pageW-2*marginX);
+    doc.text(qLines, marginX, y);
+    y += qLines.length*13 + 3;
+
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.8);
+    doc.setTextColor(90,70,50);
+    const yourLines = wrapText(`Your answer: ${ans}`, 9.8, pageW-2*marginX);
+    doc.text(yourLines, marginX+8, y);
+    y += yourLines.length*12;
+
+    if(gotIt){
+      doc.setTextColor(76,122,80);
+      doc.text('Correct', marginX+8, y);
+      y += 14;
+    } else {
+      doc.setTextColor(176,72,58);
+      doc.text('Incorrect', marginX+8, y);
+      y += 12;
+      doc.setTextColor(76,122,80);
+      const correctLines = wrapText(`Correct answer: ${q.answer}`, 9.8, pageW-2*marginX);
+      doc.text(correctLines, marginX+8, y);
+      y += correctLines.length*12 + 4;
+    }
+    y += 6;
+  });
+
   // Theory Section
   checkPage(40);
   y += 10;
   doc.setFont('helvetica','bold'); doc.setFontSize(13);
   doc.setTextColor(...goldRGB);
-  doc.text('Theory Answers (for teacher review)', marginX, y);
+  doc.text('Written Answers', marginX, y);
   y += 18;
 
   state.theory.forEach((q,i)=>{
     checkPage(60);
-    const idx = state.mcq.length+i;
+    const idx = state.mcq.length+state.fill.length+i;
     const ans = state.answers[idx] || '(No answer written)';
+    const gotIt = gradeQuestion(q,idx);
     doc.setTextColor(...brownRGB);
     doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
     const qLines = wrapText(`${i+1}. [${q.cat}] ${q.q}`, 10.5, pageW-2*marginX);
@@ -1160,7 +1504,22 @@ document.getElementById('btn-pdf').addEventListener('click', ()=>{
     doc.setTextColor(90,70,50);
     const ansLines = wrapText(ans, 9.8, pageW-2*marginX);
     doc.text(ansLines, marginX+8, y);
-    y += ansLines.length*12 + 10;
+    y += ansLines.length*12 + 2;
+
+    if(gotIt){
+      doc.setTextColor(76,122,80);
+      doc.text('Correct', marginX+8, y);
+      y += 14;
+    } else {
+      doc.setTextColor(176,72,58);
+      doc.text('Incorrect', marginX+8, y);
+      y += 12;
+      doc.setTextColor(76,122,80);
+      const correctLines = wrapText(`Expected answer: ${q.answer}`, 9.8, pageW-2*marginX);
+      doc.text(correctLines, marginX+8, y);
+      y += correctLines.length*12 + 4;
+    }
+    y += 6;
   });
 
   const fname = `Arresalah_${state.name.replace(/\s+/g,'_')}_${state.week || 'assessment'}.pdf`;
